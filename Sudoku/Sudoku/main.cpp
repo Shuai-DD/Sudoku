@@ -2,5 +2,5 @@
 int main()
 {
 	Sudoku s;
-	s.GenSolutionGrid(1);
+	s.GenSolutionGrid(2);
 }
