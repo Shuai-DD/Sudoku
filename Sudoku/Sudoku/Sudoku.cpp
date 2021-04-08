@@ -2,6 +2,7 @@
 #include<time.h>
 #include<cstdlib>
 #include<iostream>
+#include<fstream>
 using namespace std;
 
 SudokuGrids::SudokuGrids()
@@ -21,6 +22,7 @@ void SudokuGrids::print()
 	}
 	cout << endl;
 }
+
 void Sudoku::RandomLine(int line[])
 {
 	int temp_num, random_num;
@@ -59,6 +61,7 @@ bool Sudoku::JudgeLegitimacy(SudokuGrids* sudoku_grid, int row, int col, int val
 	}
 	return true;
 }
+
 bool Sudoku::FillNum(SudokuGrids* sudoku_grid,int row, int col)
 {
 	int new_col, new_row;
@@ -95,6 +98,7 @@ bool Sudoku::FillNum(SudokuGrids* sudoku_grid,int row, int col)
 void Sudoku::GenSolutionGrid(int grid_num)
 {
 	grid_num_ = grid_num;
+/*于此处产生随机数种子*/
 	srand(time(NULL));
 	SudokuGrids* temp_grid = new SudokuGrids;
 	sudoku_grids_ = temp_grid;
@@ -118,11 +122,82 @@ void Sudoku::GenSolutionGrid(int grid_num)
 		temp_grid = next_grid;
 		
 	}
+	/*temp_grid = sudoku_grids_;
+	while (temp_grid)
+	{
+		temp_grid->print();
+		temp_grid = temp_grid->next_grid;
+	}*/
+	
+}
+
+void Sudoku::GenBaseGrid(int lower_limit, int upper_limit)
+{
+	int blank_num, blank_point;
+	SudokuGrids* temp_grid = sudoku_grids_;
+	for (int i = 0; i < grid_num_; i++)
+	{
+		blank_num = lower_limit + rand() % (upper_limit - lower_limit);
+		int blank_num_oneline = blank_num / 9;
+		for (int j = 0; j < 9; j++)
+		{
+			for (int m = 0; m < blank_num_oneline; m++)
+			{
+				blank_point = rand() % 9;
+				if (temp_grid->suduku_grid[j][blank_point] == 0)
+				{
+					m--;
+				}
+				else
+				{
+					temp_grid->suduku_grid[j][blank_point] = 0;
+				}
+			}
+		}
+		blank_num_oneline = blank_num % 9;
+		int random_line = rand() % 9;
+		for (int m = 0; m < blank_num_oneline; m++)
+		{
+			int blank_point = rand() % 9;
+			if (temp_grid->suduku_grid[random_line][blank_point] == 0)
+			{
+				random_line--;
+			}
+			else
+			{
+				temp_grid->suduku_grid[random_line][blank_point] = 0;
+			}
+		}
+		temp_grid = temp_grid->next_grid;
+	}
+}
+
+void Sudoku::GridWritter()
+{
+	ofstream writter("solution.txt");
+	SudokuGrids* temp_grid = sudoku_grids_;
+	if (writter.is_open())
+	{
+		for (int i = 0; i < grid_num_; i++)
+		{
+			for (int j = 0; j < 9; j++)
+			{
+				for (int k = 0; k < 9; k++)
+				{
+					writter << temp_grid->suduku_grid[j][k] << " ";
+				}
+				writter << endl;
+			}
+			writter << endl;
+			temp_grid = temp_grid->next_grid;
+		}
+	}
 	temp_grid = sudoku_grids_;
 	while (temp_grid)
 	{
 		temp_grid->print();
 		temp_grid = temp_grid->next_grid;
 	}
-	
+
 }
+
