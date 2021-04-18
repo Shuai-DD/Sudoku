@@ -1,13 +1,14 @@
 #include"Sudoku.h"
 #include <iostream>
-#include<stdio.h>
 using namespace std;
 int main()
 {
-	int c = 1;//终盘数量
-	char s1[100] = { ' ' };//路径
-	int n = 1;//游戏数量
-	int m = 2;//游戏难度1-3
+	Sudoku s;
+	int c = 0;//终盘数量
+	char s_path[100] = { ' ' };//路径
+	bool s_sign = 0;
+	int n = 0;//游戏数量
+	int m = 0;//游戏难度1-3
 	char r[10] = { ' ' };
 	bool r_sign = 0;
 	int r_lowwer = 20;//挖空范围下限
@@ -15,14 +16,12 @@ int main()
 	bool u = 0;//是否唯一解
 	char buf[200] = { ' ' };
 	cin.get(buf, 200);
-	cout << "buf:";
-	for (int i = 0; i < 200; i++)cout << buf[i];
 	for (int i = 0; i < 200; i++)
 	{
 		if (buf[i] == ' ')continue;
 		if (buf[i] == '-')
 		{
-			switch (buf[i+1])
+			switch (buf[i + 1])
 			{
 			case'c':
 				c = 0;
@@ -94,13 +93,15 @@ int main()
 						}
 					}
 				}
-				else 
+				else
+					break;
 				break;
 			case'u':
 				u = 1;
 				break;
 			case 's':
 			{
+				s_sign = 1;
 				for (int j = i + 2;; j++)
 				{
 					if (buf[j] == ' ')continue;
@@ -111,7 +112,7 @@ int main()
 						{
 							if (buf[k] != '"')
 							{
-								s1[l] = buf[k];
+								s_path[l] = buf[k];
 								l++;
 							}
 							else
@@ -124,7 +125,7 @@ int main()
 					}
 				}
 			}
-				break;
+			break;
 			default:
 				break;
 			}
@@ -159,29 +160,59 @@ int main()
 			}
 		}
 	}
-	cout << endl << "r:";
-	for (int i = 0; i < 5; i++)cout << r[i];
-	cout << endl << "r_low:" << r_lowwer << "; r_up:" << r_upper;
-	cout << endl;
-	cout << "s1:";
-	for (int i = 0; i < 100; i++)cout << s1[i];
-	cout << endl;
-	cout << "c:" << c << endl;
-	cout << "n:" << n << endl;
-	cout << "m:" << m << endl;
-	cout << "u:" << u << endl;
-
-			//Sudoku sudoku1;
-			//sudoku1.GenSolutionGrid(2);
-			//sudoku1.sudoku_grids_->print();
-			//sudoku1.sudoku_grids_->next_grid->print();
-			//sudoku1.GenBaseGrid(6,7);
-			//sudoku1.GridWritter();
-			//sudoku1.GridReader(2);
-			////sudoku1.BackTrace(sudoku1.sudoku_grids_, 0);
-			////sudoku1.BackTrace(sudoku1.sudoku_grids_->next_grid, 0);
-			//sudoku1.Solution(sudoku1.sudoku_grids_, 2);
-			//cout << endl << sudoku1.sudoku_grids_->solutions << endl << sudoku1.sudoku_grids_->next_grid->solutions << endl;
-			////s.sudoku_grids_->print();
-			////s.sudoku_grids_->next_grid->print();
+	char game_txt[16] = "game.txt";
+	char solution_txt[16] = "solution.txt";
+	char sudoku_txt[16] = "sudoku.txt";
+	if (c)
+	{
+		s.GenSolutionGrid(c);
+		s.GridWritter(solution_txt);
+	}
+	else if (s_sign)
+	{
+		s.GridReader(s_path);
+		s.Solution();
+		s.GridWritter(sudoku_txt);
+	}
+	else if (n)
+	{
+		if (m)
+		{
+			switch (m)
+			{
+			case 1:
+				s.GenSolutionGrid(n);
+				s.GenBaseGrid(10, 20);
+				s.GridWritter(game_txt);
+				break;
+			case 2:
+				s.GenSolutionGrid(n);
+				s.GenBaseGrid(20, 40);
+				s.GridWritter(game_txt);
+				break;
+			case 3:
+				s.GenSolutionGrid(n);
+				s.GenBaseGrid(40, 55);
+				s.GridWritter(game_txt);
+				break;
+			}
+		}
+		else if (r_sign)
+		{
+			s.GenSolutionGrid(n);
+			s.GenBaseGrid(r_lowwer, r_upper);
+			s.GridWritter(game_txt);
+		}
+		else if (u)
+		{
+			s.GenUniqeBaseGrid(n);
+			s.GridWritter(game_txt);
+		}
+		else
+		{
+			s.GenSolutionGrid(n);
+			s.GenBaseGrid(30, 40);
+			s.GridWritter(game_txt);
+		}
+	}
 }
